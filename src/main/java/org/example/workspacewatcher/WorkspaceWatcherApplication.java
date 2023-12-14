@@ -11,14 +11,9 @@ public class WorkspaceWatcherApplication implements CommandLineRunner {
         SpringApplication.run(WorkspaceWatcherApplication.class, args);
     }
 
-
     @Override
     public void run(String... args) throws Exception {
         App app = new App();
         app.monitorDirectoryTree("/home/paulograbin/Hybris/l.k.bennett/hybris/bin/custom");
-
-//        CommandRunner runner = new CommandRunner();
-//        runner.buildExtension("islandpacific", "/home/paulograbin/Hybris/l.k.bennett/hybris/bin/custom/lkbennett/islandpacific");
-
     }
 }
