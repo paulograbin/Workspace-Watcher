@@ -90,7 +90,7 @@ public class App {
 
                     callRebuildExtension(key, value);
                 } else {
-                    System.out.println("Build pipeline is empty...");
+//                    System.out.println("Build pipeline is empty...");
                 }
 
                 try {
