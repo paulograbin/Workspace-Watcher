@@ -1,5 +1,9 @@
 package org.example.workspacewatcher;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.logging.LogLevel;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -34,11 +38,11 @@ public class CommandRunner {
             var process = processBuilder
                     .directory(directory)
                     .command("/bin/zsh", "-c", "ant build")
-                    .redirectOutput(ProcessBuilder.Redirect.to(new File("/home/paulograbin/Desktop/out.txt")))
-                    .redirectError(ProcessBuilder.Redirect.to(new File("/home/paulograbin/Desktop/out.txt")))
+//                    .redirectOutput(ProcessBuilder.Redirect.to(new File("/home/paulograbin/Desktop/out.txt")))
+//                    .redirectError(ProcessBuilder.Redirect.to(new File("/home/paulograbin/Desktop/out.txt")))
                     .start();
 
-            StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
+            StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), LOG::info);
             Future<?> future = executorService.submit(streamGobbler);
 
             int exitCode = process.waitFor();
@@ -53,7 +57,6 @@ public class CommandRunner {
         }
     }
 
-
     private static class StreamGobbler implements Runnable {
         private final InputStream inputStream;
         private Consumer<String> consumer;
@@ -65,7 +68,8 @@ public class CommandRunner {
 
         @Override
         public void run() {
-            new BufferedReader(new InputStreamReader(inputStream)).lines()
+            new BufferedReader(new InputStreamReader(inputStream))
+                    .lines()
                     .forEach(consumer);
         }
     }
