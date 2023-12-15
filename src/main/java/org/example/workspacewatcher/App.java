@@ -15,10 +15,9 @@ public class App implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        WorkspaceWatcher ww = new WorkspaceWatcher();
-
         try {
-            ww.start("/home/paulograbin/Hybris/l.k.bennett/hybris/bin/custom");
+            WorkspaceWatcher ww = new WorkspaceWatcher("/home/paulograbin/Hybris/l.k.bennett/hybris/bin/custom");
+            ww.start();
         } catch (RuntimeException | IOException | InterruptedException e) {
             System.err.println(e.getMessage());
         }

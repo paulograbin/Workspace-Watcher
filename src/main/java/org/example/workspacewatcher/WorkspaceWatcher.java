@@ -55,17 +55,26 @@ public class WorkspaceWatcher {
             "lkbennettglobale",
             "lkbennettadyenextensions");
 
+    private final String rootDirectoryPath;
+    private final File rootDirectory;
+
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
     private final CommandRunner runner = new CommandRunner();
-    private WatchService watchService;
+    private final WatchService watchService;
 
     private final ConcurrentHashMap<String, String> EXTENSIONS_TO_BUILD = new ConcurrentHashMap<>(10);
     private final ConcurrentHashMap<String, String> MONITORED_fILES = new ConcurrentHashMap<>(1000);
 
 
-    public void start(String rootDirectoryPath) throws IOException, InterruptedException {
-        File rootDirectory = Paths.get(rootDirectoryPath).toFile();
+    public WorkspaceWatcher(String rootDirectoryPath) throws IOException {
+        this.watchService = FileSystems.getDefault().newWatchService();
 
+        this.rootDirectoryPath = rootDirectoryPath;
+        this.rootDirectory = Paths.get(rootDirectoryPath).toFile();
+    }
+
+
+    public void start() throws IOException, InterruptedException {
         if (rootDirectory.exists() && rootDirectory.isDirectory()) {
             LOG.info("Ok, let's go");
         } else {
@@ -74,8 +83,6 @@ public class WorkspaceWatcher {
 
         setupBuilderThread();
         findJavaFiles(rootDirectory);
-        watchService = FileSystems.getDefault().newWatchService();
-
 
         watchForChangesOnMonitoredDirectories();
     }
