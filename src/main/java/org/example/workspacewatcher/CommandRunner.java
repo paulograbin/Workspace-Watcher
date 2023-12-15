@@ -2,7 +2,6 @@ package org.example.workspacewatcher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.logging.LogLevel;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,20 +56,13 @@ public class CommandRunner {
         }
     }
 
-    private static class StreamGobbler implements Runnable {
-        private final InputStream inputStream;
-        private Consumer<String> consumer;
-
-        public StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
-            this.inputStream = inputStream;
-            this.consumer = consumer;
-        }
+    private record StreamGobbler(InputStream inputStream, Consumer<String> consumer) implements Runnable {
 
         @Override
-        public void run() {
-            new BufferedReader(new InputStreamReader(inputStream))
-                    .lines()
-                    .forEach(consumer);
+            public void run() {
+                new BufferedReader(new InputStreamReader(inputStream))
+                        .lines()
+                        .forEach(consumer);
+            }
         }
-    }
 }

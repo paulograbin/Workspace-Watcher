@@ -55,7 +55,6 @@ public class WorkspaceWatcher {
             "lkbennettglobale",
             "lkbennettadyenextensions");
 
-    private final String rootDirectoryPath;
     private final File rootDirectory;
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
@@ -69,12 +68,11 @@ public class WorkspaceWatcher {
     public WorkspaceWatcher(String rootDirectoryPath) throws IOException {
         this.watchService = FileSystems.getDefault().newWatchService();
 
-        this.rootDirectoryPath = rootDirectoryPath;
         this.rootDirectory = Paths.get(rootDirectoryPath).toFile();
     }
 
 
-    public void start() throws IOException, InterruptedException {
+    public void start() throws InterruptedException {
         if (rootDirectory.exists() && rootDirectory.isDirectory()) {
             LOG.info("Ok, let's go");
         } else {
@@ -119,10 +117,11 @@ public class WorkspaceWatcher {
         }
     }
 
-    private void registerAllRelevantPaths() throws IOException {
+    private void registerAllRelevantPaths() {
 
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
     private void setupBuilderThread() {
         Runnable builderThreadTask = () -> {
             while (true) {
