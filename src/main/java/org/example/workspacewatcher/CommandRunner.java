@@ -13,6 +13,8 @@ import java.util.function.Consumer;
 
 public class CommandRunner {
 
+    private final Logger LOG = LoggerFactory.getLogger(CommandRunner.class);
+
 
     public void buildExtension(String extensionName, String extensionPath) {
         ExecutorService executorService = Executors.newFixedThreadPool(5);
@@ -27,7 +29,7 @@ public class CommandRunner {
             environment.put("PATH", "/home/paulograbin/Hybris/l.k.bennett/hybris/bin/platform/apache-ant/bin:/home/paulograbin/.sdkman/candidates/java/17.0.6-tem/bin:/home/paulograbin/.asdf/shims:/usr/local/go/bin:/home/paulograbin/.local/bin/:/home/paulograbin/programs/::/home/paulograbin/.asdf/shims:/home/paulograbin/.asdf/bin:/usr/local/bin:/usr/bin:/bin:/home/paulograbin/bin:/usr/local/sbin:/usr/sbin:/var/lib/snapd/snap/bin");
 
             File directory = new File(extensionPath);
-            System.out.println("Running command in " + directory.getPath());
+            LOG.info("Running command in {}", directory.getPath());
 
             var process = processBuilder
                     .directory(directory)
@@ -42,9 +44,9 @@ public class CommandRunner {
             int exitCode = process.waitFor();
 
             if (exitCode == 0) {
-                System.out.println("Extension " + extensionName + " successfully compiled");
+                LOG.info("Extension {} successfully compiled", extensionName);
             } else {
-                System.out.println("Failed compilation of " + extensionName);
+                LOG.warn("Failed compilation of {}", extensionName);
             }
         } catch (RuntimeException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
