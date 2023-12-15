@@ -123,18 +123,6 @@ public class WorkspaceWatcher {
 
     }
 
-    private void callRebuildExtension(String extensionName, String pathToChangedFile) {
-        System.out.println("Rebuilding " + extensionName);
-
-        File extensionRootDirectory = new File(pathToChangedFile);
-
-        while (!extensionRootDirectory.getName().equals(extensionName)) {
-            extensionRootDirectory = extensionRootDirectory.getParentFile();
-        }
-
-        runner.buildExtension(extensionName, extensionRootDirectory.getPath());
-    }
-
     private void setupBuilderThread() {
         Runnable builderThreadTask = () -> {
             while (true) {
@@ -164,6 +152,18 @@ public class WorkspaceWatcher {
         LOG.info("Submitting builder thread...");
         thread.start();
 //        executorService.submit(thread);
+    }
+
+    private void callRebuildExtension(String extensionName, String pathToChangedFile) {
+        LOG.info("Rebuilding extension {}", extensionName);
+
+        File extensionRootDirectory = new File(pathToChangedFile);
+
+        while (!extensionRootDirectory.getName().equals(extensionName)) {
+            extensionRootDirectory = extensionRootDirectory.getParentFile();
+        }
+
+        runner.buildExtension(extensionName, extensionRootDirectory.getPath());
     }
 
     private void findJavaFiles(File rootDirectory) {
