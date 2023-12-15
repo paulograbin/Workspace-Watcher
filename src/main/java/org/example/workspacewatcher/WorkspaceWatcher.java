@@ -78,7 +78,7 @@ public class WorkspaceWatcher {
         if (rootDirectory.exists() && rootDirectory.isDirectory()) {
             LOG.info("Ok, let's go");
         } else {
-            LOG.error("Doesn't look right...");
+            LOG.error("Doesn't look right, are you sure it exists and is a directory?");
         }
 
         setupBuilderThread();
