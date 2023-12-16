@@ -26,8 +26,9 @@ public class ExtensionDirectoryDiscoverer {
         Set<String> discoveredExtensions = new HashSet<>(20);
 
         File customExtensionsDirectory = new File(platformDirectory.getParent() + "/custom");
-        if (customExtensionsDirectory.exists() && customExtensionsDirectory.isDirectory()) {
-            LOG.info("We're in custom directory");
+        if (!customExtensionsDirectory.exists() || !customExtensionsDirectory.isDirectory()) {
+            LOG.error("Could not determine your custom directory");
+            System.exit(1);
         }
 
         LOG.info("Searching for all extensions under {}", customExtensionsDirectory.getPath());
