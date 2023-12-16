@@ -70,8 +70,7 @@ public class WorkspaceWatcher {
 
         setupBuilderThread();
         findJavaFiles(rootDirectory);
-//
-//        watchForChangesOnMonitoredDirectories();
+        watchForChangesOnMonitoredDirectories();
     }
 
     private boolean isThisPlatformDirectory() {
@@ -85,7 +84,6 @@ public class WorkspaceWatcher {
 
         return false;
     }
-
 
     private boolean hasNecessaryFiles() {
         File[] allFiles = rootDirectory.listFiles();
@@ -123,7 +121,7 @@ public class WorkspaceWatcher {
                             LOG.info("Adding extension to build pipeline: {} at {} ", extensionName, pathToChangedFile);
 
                             EXTENSIONS_TO_BUILD.put(extensionName, pathToChangedFile);
-                            LOG.info("Pipeline size increased to {}", EXTENSIONS_TO_BUILD.size());
+                            LOG.info("Pipeline size now is {}", EXTENSIONS_TO_BUILD.size());
 
                             break;
                         }
@@ -135,10 +133,6 @@ public class WorkspaceWatcher {
 
             take.reset();
         }
-    }
-
-    private void registerAllRelevantPaths() {
-
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
