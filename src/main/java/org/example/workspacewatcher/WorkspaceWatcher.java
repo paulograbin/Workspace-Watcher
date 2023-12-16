@@ -18,6 +18,7 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,39 +34,23 @@ public class WorkspaceWatcher {
 
     private final Logger LOG = LoggerFactory.getLogger(WorkspaceWatcher.class);
 
-    private final Set<String> EXTENSION_NAMES = Set.of("lkbennettfulfilment",
-            "lkbennettwebserviceclient",
-            "lkbennettcore",
-            "lkbennettfacades",
-            "lkbennetttest",
-            "lkbennetttax",
-            "lkbennettreleasedata",
-            "lkbennettamplience",
-            "lkbennettamplienceplugin",
-            "lkbennettcommercewebservices",
-            "lkbennettintegrationgfs",
-            "lkbennetttrackingdressipi",
-            "islandpacific",
-            "globalecore",
-            "globalefacades",
-            "globaleendpoint",
-            "globalepromotions",
-            "globaleaddon",
-            "globalebackoffice",
-            "lkbennettglobale",
-            "lkbennettadyenextensions");
 
     private final File rootDirectory;
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
-    private final CommandRunner runner = new CommandRunner();
+
+    private final ExtensionDirectoryDiscoverer extensionDirectoryDiscoverer;
+    private final CommandRunner runner;
     private final WatchService watchService;
 
+    private final Set<String> extensionNames = new HashSet<>(20);
     private final ConcurrentHashMap<String, String> EXTENSIONS_TO_BUILD = new ConcurrentHashMap<>(10);
     private final ConcurrentHashMap<String, String> MONITORED_fILES = new ConcurrentHashMap<>(1000);
 
 
-    public WorkspaceWatcher(String rootDirectoryPath) throws IOException {
+    public WorkspaceWatcher(String rootDirectoryPath, ExtensionDirectoryDiscoverer extensionDirectoryDiscoverer, CommandRunner runner) throws IOException {
+        this.extensionDirectoryDiscoverer = extensionDirectoryDiscoverer;
+        this.runner = runner;
         this.watchService = FileSystems.getDefault().newWatchService();
 
         this.rootDirectory = Paths.get(rootDirectoryPath).toFile();
@@ -137,7 +122,7 @@ public class WorkspaceWatcher {
                 if (MONITORED_fILES.containsKey(changedFileName)) {
                     String pathToChangedFile = MONITORED_fILES.get(changedFileName);
 
-                    for (String extensionName : EXTENSION_NAMES) {
+                    for (String extensionName : extensionNames) {
                         if (pathToChangedFile.contains(extensionName)) {
                             LOG.info("Adding extension to build pipeline: {} at {} ", extensionName, pathToChangedFile);
 
