@@ -73,16 +73,55 @@ public class WorkspaceWatcher {
 
 
     public void start() throws InterruptedException {
-        if (rootDirectory.exists() && rootDirectory.isDirectory()) {
-            LOG.info("Ok, let's go");
-        } else {
-            LOG.error("Doesn't look right, are you sure it exists and is a directory?");
+        if (!isThisPlatformDirectory()) {
+            LOG.error("This does not seem like platform directory");
+            System.exit(1);
         }
 
-        setupBuilderThread();
-        findJavaFiles(rootDirectory);
+        extensionNames.addAll(extensionDirectoryDiscoverer.searchForHybrisExtensions(rootDirectory));
 
-        watchForChangesOnMonitoredDirectories();
+        if (extensionNames.isEmpty()) {
+            LOG.error("Did not found any extension, cannot proceed.");
+            System.exit(1);
+        } else {
+            LOG.info("Found {} extensions", extensionNames.size());
+        }
+
+//        setupBuilderThread();
+//        findJavaFiles(rootDirectory);
+//
+//        watchForChangesOnMonitoredDirectories();
+    }
+
+    private boolean isThisPlatformDirectory() {
+        if (!rootDirectory.exists() || !rootDirectory.isDirectory()) {
+            return false;
+        }
+
+        if (rootDirectory.getName().equalsIgnoreCase("platform") && hasNecessaryFiles()) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    private boolean hasNecessaryFiles() {
+        File[] allFiles = rootDirectory.listFiles();
+
+        boolean foundBuildXml = false;
+        boolean foundAntScript = false;
+
+        for (File file : allFiles) {
+            if (file.getName().equalsIgnoreCase("setantenv.sh")) {
+                foundAntScript = true;
+            }
+            if (file.getName().equalsIgnoreCase("build.xml")) {
+                foundBuildXml = true;
+            }
+        }
+
+        return foundAntScript && foundBuildXml;
     }
 
     private void watchForChangesOnMonitoredDirectories() throws InterruptedException {
