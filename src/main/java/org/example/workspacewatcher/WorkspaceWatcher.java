@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 
@@ -36,8 +34,6 @@ public class WorkspaceWatcher {
 
 
     private final File rootDirectory;
-
-    private final ExecutorService executorService = Executors.newFixedThreadPool(5);
 
     private final ExtensionDirectoryDiscoverer extensionDirectoryDiscoverer;
     private final CommandRunner runner;
@@ -72,8 +68,8 @@ public class WorkspaceWatcher {
             LOG.info("Found {} extensions", extensionNames.size());
         }
 
-//        setupBuilderThread();
-//        findJavaFiles(rootDirectory);
+        setupBuilderThread();
+        findJavaFiles(rootDirectory);
 //
 //        watchForChangesOnMonitoredDirectories();
     }
@@ -160,7 +156,7 @@ public class WorkspaceWatcher {
 
                     callRebuildExtension(key, value);
                 } else {
-//                    System.out.println("Build pipeline is empty...");
+                    LOG.debug("Build pipeline is empty...");
                 }
 
                 try {
@@ -172,9 +168,8 @@ public class WorkspaceWatcher {
         };
 
         Thread thread = new Thread(builderThreadTask, "builderThread");
-        LOG.info("Submitting builder thread...");
+        LOG.info("Starting builder thread...");
         thread.start();
-//        executorService.submit(thread);
     }
 
     private void callRebuildExtension(String extensionName, String pathToChangedFile) {
@@ -244,9 +239,8 @@ public class WorkspaceWatcher {
         };
 
         Thread javaFileFinderTask = new Thread(findFilesTask, "fileFinderThread");
-        LOG.info("Submitting finder thread...");
+        LOG.info("Starting finder thread...");
         javaFileFinderTask.start();
-//        executorService.submit(javaFileFinderTask);
     }
 
     private Set<Path> makeDirectoryPathsFromFileList(Collection<String> values) {
