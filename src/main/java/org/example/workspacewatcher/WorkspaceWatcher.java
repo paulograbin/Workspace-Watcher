@@ -209,7 +209,7 @@ public class WorkspaceWatcher {
 
                 Map<String, String> relevantFilesFound = fileToPathMap.entrySet()
                         .stream()
-                        .filter(entry -> entry.getValue().endsWith(".java"))
+                        .filter(entry -> entry.getValue().endsWith(".java") || entry.getValue().endsWith(".xml"))
                         .filter(entry -> !entry.getValue().contains("jalo"))
                         .filter(entry -> !entry.getValue().contains("gensrc"))
                         .filter(entry -> !entry.getValue().contains("testsrc"))
