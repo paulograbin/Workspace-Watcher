@@ -216,6 +216,13 @@ public class WorkspaceWatcher {
                         .filter(entry -> !MONITORED_fILES.containsKey(entry.getKey()))
                         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
+                Collection<String> files = relevantFilesFound.values();
+                files = files.stream().sorted().toList();
+
+                for (String file : files) {
+                    LOG.debug("File {}", file.replace("/home/paulograbin/Hybris/l.k.bennett/hybris/bin/custom/", ""));
+                }
+
                 LOG.info("Relevant files found {}", relevantFilesFound.size());
 
                 MONITORED_fILES.putAll(relevantFilesFound);
