@@ -49,7 +49,7 @@ public class ExtensionDirectoryDiscoverer {
                 }
 
 
-                private boolean isExtensionDiretory(File directory) {
+                private boolean isExtensionDirectory(File directory) {
                     return Arrays.stream(requireNonNull(directory.listFiles()))
                             .anyMatch(p -> p.getName().equalsIgnoreCase("build.xml"));
                 }
