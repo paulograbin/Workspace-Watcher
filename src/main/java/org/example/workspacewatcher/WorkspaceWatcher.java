@@ -55,7 +55,7 @@ public class WorkspaceWatcher {
 
     public void start() throws InterruptedException {
         if (!isThisPlatformDirectory()) {
-            LOG.error("This does not seem like platform directory");
+            LOG.error("{} does not seem like platform directory", rootDirectory.getPath());
             System.exit(1);
         }
 
