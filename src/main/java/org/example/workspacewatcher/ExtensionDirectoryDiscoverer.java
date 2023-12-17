@@ -22,14 +22,8 @@ public class ExtensionDirectoryDiscoverer {
     private final Logger LOG = LoggerFactory.getLogger(ExtensionDirectoryDiscoverer.class);
 
 
-    public Set<String> searchForHybrisExtensions(File platformDirectory) {
+    public Set<String> searchForHybrisExtensions(File customExtensionsDirectory) {
         Set<String> discoveredExtensions = new HashSet<>(20);
-
-        File customExtensionsDirectory = new File(platformDirectory.getParent() + "/custom");
-        if (!customExtensionsDirectory.exists() || !customExtensionsDirectory.isDirectory()) {
-            LOG.error("Could not determine your custom directory");
-            System.exit(1);
-        }
 
         LOG.info("Searching for all extensions under {}", customExtensionsDirectory.getPath());
         try {
@@ -39,7 +33,7 @@ public class ExtensionDirectoryDiscoverer {
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                     File directory = dir.toFile();
 
-                    if (isExtensionDiretory(directory)) {
+                    if (isExtensionDirectory(directory)) {
                         LOG.debug("Found one extension {}", directory.getName());
 
                         discoveredExtensions.add(directory.getName());

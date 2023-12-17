@@ -33,7 +33,8 @@ public class WorkspaceWatcher {
     private final Logger LOG = LoggerFactory.getLogger(WorkspaceWatcher.class);
 
 
-    private final File rootDirectory;
+    private final File platformDirectory;
+    private final File customExtensionsDirectory;
 
     private final ExtensionDirectoryDiscoverer extensionDirectoryDiscoverer;
     private final CommandRunner runner;
@@ -49,17 +50,22 @@ public class WorkspaceWatcher {
         this.runner = runner;
         this.watchService = FileSystems.getDefault().newWatchService();
 
-        this.rootDirectory = Paths.get(rootDirectoryPath).toFile();
+        this.platformDirectory = Paths.get(rootDirectoryPath).toFile();
+        this.customExtensionsDirectory = Paths.get(platformDirectory.getParent() + "/custom").toFile();
     }
 
 
     public void start() throws InterruptedException {
         if (!isThisPlatformDirectory()) {
-            LOG.error("{} does not seem like platform directory", rootDirectory.getPath());
+            LOG.error("{} does not seem like platform directory", platformDirectory.getPath());
             System.exit(1);
         }
 
-        extensionNames.addAll(extensionDirectoryDiscoverer.searchForHybrisExtensions(rootDirectory));
+        if (!customExtensionsDirectory.exists() && customExtensionsDirectory.isDirectory()) {
+            LOG.info("Could not determine custom directory on {}", customExtensionsDirectory.getPath());
+        }
+
+        extensionNames.addAll(extensionDirectoryDiscoverer.searchForHybrisExtensions(customExtensionsDirectory));
 
         if (extensionNames.isEmpty()) {
             LOG.error("Did not found any extension, cannot proceed.");
@@ -74,11 +80,11 @@ public class WorkspaceWatcher {
     }
 
     private boolean isThisPlatformDirectory() {
-        if (!rootDirectory.exists() || !rootDirectory.isDirectory()) {
+        if (!platformDirectory.exists() || !platformDirectory.isDirectory()) {
             return false;
         }
 
-        if (rootDirectory.getName().equalsIgnoreCase("platform") && hasNecessaryFiles()) {
+        if (platformDirectory.getName().equalsIgnoreCase("platform") && hasNecessaryFiles()) {
             return true;
         }
 
@@ -86,7 +92,7 @@ public class WorkspaceWatcher {
     }
 
     private boolean hasNecessaryFiles() {
-        File[] allFiles = rootDirectory.listFiles();
+        File[] allFiles = platformDirectory.listFiles();
 
         boolean foundBuildXml = false;
         boolean foundAntScript = false;
@@ -184,7 +190,7 @@ public class WorkspaceWatcher {
                 Map<String, String> fileToPathMap = new HashMap<>(1000);
 
                 try {
-                    Files.walkFileTree(rootDirectory.toPath(), new SimpleFileVisitor<>() {
+                    Files.walkFileTree(customExtensionsDirectory.toPath(), new SimpleFileVisitor<>() {
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                             File visitedFile = file.toFile();
