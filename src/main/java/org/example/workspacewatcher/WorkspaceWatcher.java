@@ -75,7 +75,7 @@ public class WorkspaceWatcher {
         }
 
         setupBuilderThread();
-        findJavaFiles(rootDirectory);
+        findJavaFilesUnderCustomDirectory();
         watchForChangesOnMonitoredDirectories();
     }
 
@@ -184,7 +184,7 @@ public class WorkspaceWatcher {
         runner.buildExtension(extensionName, extensionRootDirectory.getPath());
     }
 
-    private void findJavaFiles(File rootDirectory) {
+    private void findJavaFilesUnderCustomDirectory() {
         Runnable findFilesTask = () -> {
             while (true) {
                 Map<String, String> fileToPathMap = new HashMap<>(1000);
