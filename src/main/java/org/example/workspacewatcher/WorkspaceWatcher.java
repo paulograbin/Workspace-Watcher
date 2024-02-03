@@ -74,6 +74,8 @@ public class WorkspaceWatcher {
             LOG.info("Found {} extensions", extensionNames.size());
         }
 
+        extensionNames.remove("lkbennettcommercewebservices");
+
         setupBuilderThread();
         findJavaFilesUnderCustomDirectory();
         watchForChangesOnMonitoredDirectories();
@@ -113,7 +115,7 @@ public class WorkspaceWatcher {
         while (true) {
             WatchKey take = watchService.take();
             for (WatchEvent<?> pollEvent : take.pollEvents()) {
-//                System.out.println("Event kind:" + pollEvent.kind() + ". File affected: " + pollEvent.context() + ".");
+                System.out.println("Event kind:" + pollEvent.kind() + ". File affected: " + pollEvent.context() + ".");
 
                 Path changedFile = (Path) pollEvent.context();
                 String changedFileName = changedFile.getFileName().toString();
@@ -146,6 +148,8 @@ public class WorkspaceWatcher {
         Runnable builderThreadTask = () -> {
             while (true) {
                 if (!EXTENSIONS_TO_BUILD.isEmpty()) {
+                    LOG.info("Pipeline size {}", EXTENSIONS_TO_BUILD.size());
+
                     Iterator<Entry<String, String>> iterator = EXTENSIONS_TO_BUILD.entrySet().iterator();
                     Entry<String, String> entry = iterator.next();
 
